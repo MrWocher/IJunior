@@ -5,19 +5,19 @@ using UnityEngine;
 public class MoveThief : MonoBehaviour
 {
 
-    [SerializeField] private float speed;
+    [SerializeField] private float _speed;
 
-    private Transform thiefTransform;
+    private Transform _thiefTransform;
 
     private void OnValidate()
     {
-        if(speed < 0f) speed = 0f;
+        if(_speed < 0f) _speed = 0f;
     }
 
     private void OnEnable()
     {
         
-        thiefTransform = GetComponent<Transform>();
+        _thiefTransform = GetComponent<Transform>();
 
     }
 
@@ -27,24 +27,13 @@ public class MoveThief : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
         {
 
-            thiefTransform.Translate(-speed * Time.fixedDeltaTime, 0f, 0f);
+            _thiefTransform.Translate(-_speed * Time.fixedDeltaTime, 0f, 0f);
 
         }
         else if (Input.GetKey(KeyCode.S))
         {
 
-            thiefTransform.Translate(speed * Time.fixedDeltaTime, 0f, 0f);
-
-        }
-
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-
-        if (other.TryGetComponent(out Door door)){
-
-            
+            _thiefTransform.Translate(_speed * Time.fixedDeltaTime, 0f, 0f);
 
         }
 
