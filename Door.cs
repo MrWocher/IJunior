@@ -19,30 +19,30 @@ public class Door : MonoBehaviour
     private void OnEnable()
     {
         
-        audioSource = GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();
 
     }
     
     private void OnValidate()
     {
 
-        if (speedLouder < 0f) speedLouder = 0f; 
+        if (_speedLouder < 0f) _speedLouder = 0f; 
 
     }
 
     private void FixedUpdate()
     {
 
-        if (thiefOnHome)
+        if (_thiefOnHome)
         {
 
-            soundVolume = Mathf.MoveTowards(soundVolume, 1f, speedLouder * Time.fixedDeltaTime);
+            _soundVolume = Mathf.MoveTowards(_soundVolume, 1f, _speedLouder * Time.fixedDeltaTime);
 
         }
         if (!thiefOnHome)
         {
 
-            soundVolume = Mathf.MoveTowards(soundVolume, 0f, speedLouder * Time.fixedDeltaTime);
+            _soundVolume = Mathf.MoveTowards(_soundVolume, 0f, _speedLouder * Time.fixedDeltaTime);
 
         }
 
@@ -51,11 +51,11 @@ public class Door : MonoBehaviour
     IEnumerator checkVolumeSound()
     {
 
-        var waitUntil = new WaitUntil(() => soundVolume <= 0f);
+        var waitUntil = new WaitUntil(() => _soundVolume <= 0f);
 
         yield return waitUntil;
 
-        audioSource.Stop();
+        _audioSource.Stop();
     
     }
 
@@ -65,8 +65,8 @@ public class Door : MonoBehaviour
         if(other.TryGetComponent(out MoveThief thief))
         {
 
-            audioSource.Play();
-            thiefOnHome = true;
+            _audioSource.Play();
+            _thiefOnHome = true;
 
         }
 
@@ -78,7 +78,7 @@ public class Door : MonoBehaviour
         if (other.TryGetComponent(out MoveThief thief))
         {
 
-            thiefOnHome = false;
+            _thiefOnHome = false;
             StartCoroutine(checkVolumeSound());
 
         }
