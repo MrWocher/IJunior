@@ -5,12 +5,12 @@ public class Door : MonoBehaviour
 {
 
     [Header("Siren Params")]
-    [SerializeField] private float speedLouder;
+    [SerializeField] private float _speedLouder;
 
-    private bool thiefOnHome = false;
+    private bool _thiefOnHome = false;
 
-    private AudioSource audioSource;
-    private float soundVolume { 
+    private AudioSource _audioSource;
+    private float _soundVolume { 
         get { return audioSource.volume; } 
         set { audioSource.volume = value; } 
     }
@@ -56,9 +56,7 @@ public class Door : MonoBehaviour
         yield return waitUntil;
 
         audioSource.Stop();
-
-        StopCoroutine(checkVolumeSound());
-
+    
     }
 
     private void OnTriggerEnter(Collider other)
