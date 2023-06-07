@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class Siren : Door
 {
     [Header("Siren Params")]
@@ -20,35 +21,48 @@ public class Siren : Door
 
     private void OnValidate()
     {
-        if (_changeSirenVolumeSpeed < 0f) _changeSirenVolumeSpeed = 0f;
+        if (_changeSirenVolumeSpeed < 0f) 
+            _changeSirenVolumeSpeed = 0.1f;
     }
 
-    private void FixedUpdate()
+    private IEnumerator IncreaseSirenVolume()
     {
-        if(_audioSource.isPlaying)
+        var waitForEndOfFrame = new WaitForEndOfFrame();
+
+        _audioSource.Play();
+
+        while (_sirenVolume < 1f)
+        {
             _sirenVolume = Mathf.MoveTowards(_sirenVolume, 1f, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
+
+            yield return waitForEndOfFrame;
+        }
     }
 
-    private IEnumerator CheckSirenVolume()
+    private IEnumerator ReduceSirenVolume()
     {
-        var waitUntil = new WaitUntil(() => _sirenVolume <= 0f);
+        var waitForEndOfFrame = new WaitForEndOfFrame();
 
-        StopCoroutine(CheckSirenVolume());
+        while (_sirenVolume > 0f)
+        {
+            _sirenVolume = Mathf.MoveTowards(_sirenVolume, 0f, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
 
-        yield return waitUntil;
+            yield return waitForEndOfFrame;
+        }
 
         _audioSource.Stop();
     }
 
     public void OnPlayerSiren()
     {
-        _audioSource.Play();
-        _changeSirenVolumeSpeed = Mathf.Abs(_changeSirenVolumeSpeed);
+        StopAllCoroutines();
+        StartCoroutine(IncreaseSirenVolume());
     }
     public void OnStopSiren()
     {
-        _changeSirenVolumeSpeed = -Mathf.Abs(_changeSirenVolumeSpeed);
-        StartCoroutine(CheckSirenVolume());
+        StopAllCoroutines();
+        StartCoroutine(ReduceSirenVolume());
     }
 
 }
+
