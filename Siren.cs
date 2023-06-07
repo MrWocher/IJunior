@@ -12,6 +12,8 @@ public class Siren : Door
         set { _audioSource.volume = value; }
     }
 
+    private bool thiefInHouse = false;
+
     private AudioSource _audioSource;
 
     private void OnEnable()
@@ -25,43 +27,39 @@ public class Siren : Door
             _changeSirenVolumeSpeed = 0.1f;
     }
 
-    private IEnumerator IncreaseSirenVolume()
+    private IEnumerator _ChangeSirenVolume()
     {
         var waitForEndOfFrame = new WaitForEndOfFrame();
+
+        float _targetVolume;
 
         _audioSource.Play();
 
-        while (_sirenVolume < 1f)
+        while (_audioSource.isPlaying)
         {
-            _sirenVolume = Mathf.MoveTowards(_sirenVolume, 1f, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
-
             yield return waitForEndOfFrame;
+
+            _targetVolume = !thiefInHouse ? 0f : 1f;
+            
+            _sirenVolume = Mathf.MoveTowards(_sirenVolume, _targetVolume, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
+
+            if (_sirenVolume <= 0f)
+                _audioSource.Stop();
         }
-    }
-
-    private IEnumerator ReduceSirenVolume()
-    {
-        var waitForEndOfFrame = new WaitForEndOfFrame();
-
-        while (_sirenVolume > 0f)
-        {
-            _sirenVolume = Mathf.MoveTowards(_sirenVolume, 0f, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
-
-            yield return waitForEndOfFrame;
-        }
-
-        _audioSource.Stop();
     }
 
     public void OnPlayerSiren()
     {
-        StopAllCoroutines();
-        StartCoroutine(IncreaseSirenVolume());
+        thiefInHouse = true;
+
+        if (_ChangeSirenVolume() != null)
+            StopCoroutine(_ChangeSirenVolume());
+        StartCoroutine(_ChangeSirenVolume());
     }
+
     public void OnStopSiren()
     {
-        StopAllCoroutines();
-        StartCoroutine(ReduceSirenVolume());
+        thiefInHouse = false;
     }
 
 }
