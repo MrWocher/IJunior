@@ -31,7 +31,6 @@ public class Siren : Door
 
     private IEnumerator CheckSirenVolume()
     {
-
         var waitUntil = new WaitUntil(() => _sirenVolume <= 0f);
 
         StopCoroutine(CheckSirenVolume());
@@ -39,22 +38,17 @@ public class Siren : Door
         yield return waitUntil;
 
         _audioSource.Stop();
-
     }
 
     public void OnPlayerSiren()
     {
-
         _audioSource.Play();
         _changeSirenVolumeSpeed = Mathf.Abs(_changeSirenVolumeSpeed);
-
     }
     public void OnStopSiren()
     {
-
         _changeSirenVolumeSpeed = -Mathf.Abs(_changeSirenVolumeSpeed);
         StartCoroutine(CheckSirenVolume());
-
     }
 
 }
