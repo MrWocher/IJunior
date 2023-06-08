@@ -2,10 +2,10 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class Siren : Door
+public class Siren : MonoBehaviour
 {
     [Header("Siren Params")]
-    [SerializeField] private float _changeSirenVolumeSpeed;
+    [SerializeField] private float _changeVolumePerFrame = 0.1f;
     private float _sirenVolume
     {
         get { return _audioSource.volume; }
@@ -23,8 +23,8 @@ public class Siren : Door
 
     private void OnValidate()
     {
-        if (_changeSirenVolumeSpeed < 0f) 
-            _changeSirenVolumeSpeed = 0.1f;
+        if (_changeVolumePerFrame < 0f)
+            _changeVolumePerFrame = 0.1f;
     }
 
     private IEnumerator _ChangeSirenVolume()
@@ -41,14 +41,14 @@ public class Siren : Door
 
             _targetVolume = !thiefInHouse ? 0f : 1f;
             
-            _sirenVolume = Mathf.MoveTowards(_sirenVolume, _targetVolume, _changeSirenVolumeSpeed * Time.fixedDeltaTime);
+            _sirenVolume = Mathf.MoveTowards(_sirenVolume, _targetVolume, _changeVolumePerFrame * Time.fixedDeltaTime);
 
             if (_sirenVolume <= 0f)
                 _audioSource.Stop();
         }
     }
 
-    public void OnPlayerSiren()
+    public void OnPlaySiren()
     {
         thiefInHouse = true;
 
