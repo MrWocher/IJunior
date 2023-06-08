@@ -58,7 +58,7 @@ public class Siren : MonoBehaviour
             
             _sirenVolume = Mathf.MoveTowards(_sirenVolume, _targetVolume, _changeVolumePerFrame * Time.fixedDeltaTime);
 
-            if (_sirenVolume <= 0f)
+            if (_sirenVolume <= _minSirenVolume)
                 _audioSource.Stop();
         }
     }
