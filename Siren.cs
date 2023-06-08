@@ -12,9 +12,19 @@ public class Siren : MonoBehaviour
         set { _audioSource.volume = value; }
     }
 
+    private float _maxSirenVolume = 1f;
+    private float _minSirenVolume = 0f;
+
+    private float _targetSirenVolume
+    {
+        get { return !thiefInHouse ? _minSirenVolume : _maxSirenVolume; }
+    }
+
     private bool thiefInHouse = false;
 
     private AudioSource _audioSource;
+
+    private Coroutine _changeSirenVolume;
 
     private void OnEnable()
     {
@@ -27,19 +37,24 @@ public class Siren : MonoBehaviour
             _changeVolumePerFrame = 0.1f;
     }
 
-    private IEnumerator _ChangeSirenVolume()
+    private void _startChangeSirenVolume()
+    {
+
+        if (_changeSirenVolume != null)
+            StopCoroutine(_changeSirenVolume);
+        _changeSirenVolume = StartCoroutine(_ChangeSirenVolume(_targetSirenVolume));
+
+    }
+
+    private IEnumerator _ChangeSirenVolume(float _targetVolume)
     {
         var waitForEndOfFrame = new WaitForEndOfFrame();
-
-        float _targetVolume;
 
         _audioSource.Play();
 
         while (_audioSource.isPlaying)
         {
             yield return waitForEndOfFrame;
-
-            _targetVolume = !thiefInHouse ? 0f : 1f;
             
             _sirenVolume = Mathf.MoveTowards(_sirenVolume, _targetVolume, _changeVolumePerFrame * Time.fixedDeltaTime);
 
@@ -52,15 +67,16 @@ public class Siren : MonoBehaviour
     {
         thiefInHouse = true;
 
-        if (_ChangeSirenVolume() != null)
-            StopCoroutine(_ChangeSirenVolume());
-        StartCoroutine(_ChangeSirenVolume());
+        _startChangeSirenVolume();
     }
 
     public void OnStopSiren()
     {
         thiefInHouse = false;
+
+        _startChangeSirenVolume();
     }
 
 }
+
 
