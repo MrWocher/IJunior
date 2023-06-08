@@ -1,14 +1,17 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField] private Siren siren;
+
+    [SerializeField] private UnityEvent _enterInHome;
+    [SerializeField] private UnityEvent _exitFromHome;
 
     private void OnTriggerEnter(Collider other)
     {
         if(other.TryGetComponent(out MoveThief thief))
         {
-            siren.OnPlayerSiren();
+            _enterInHome?.Invoke();
         }
     }
 
@@ -16,7 +19,7 @@ public class Door : MonoBehaviour
     {
         if (other.TryGetComponent(out MoveThief thief))
         {
-            siren.OnStopSiren();
+            _exitFromHome?.Invoke();
         }
     }
 
